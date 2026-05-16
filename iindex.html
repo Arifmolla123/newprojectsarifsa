@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Tools UI</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div id="drawer" class="drawer">
+        <div class="drawer-header">
+            <div class="profile-pic">
+                <i class="fas fa-user-secret"></i>
+            </div>
+            <h3>Cyber User</h3>
+            <span class="badge">VIP</span>
+        </div>
+        <ul class="drawer-links">
+            <li><i class="fas fa-user"></i> Profile</li>
+            <li class="flex-between">
+                <span><i class="fas fa-moon"></i> Dark Mode</span>
+                <input type="checkbox" checked>
+            </li>
+            <li><i class="fas fa-crown" style="color: gold;"></i> VIP Menu</li>
+            <li><i class="fas fa-cog"></i> Settings</li>
+            <hr>
+            <li class="logout"><i class="fas fa-sign-out-alt"></i> Logout</li>
+        </ul>
+    </div>
+
+    <div id="main-content">
+        <header>
+            <i class="fas fa-bars" id="menu-btn"></i>
+            <h1 class="logo">CYBER TOOLS</h1>
+            <i class="fas fa-ellipsis-v"></i>
+        </header>
+
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" placeholder="Search tools...">
+            <i class="fas fa-sliders-h filter-icon"></i>
+        </div>
+
+        <section class="section">
+            <div class="section-header">
+                <h2>CATEGORIES</h2>
+                <span class="view-all">View All</span>
+            </div>
+            <div class="category-list">
+                <div class="cat-item"><i class="fas fa-network-wired"></i><span>Network</span></div>
+                <div class="cat-item"><i class="fas fa-shield-alt"></i><span>Security</span></div>
+                <div class="cat-item"><i class="fas fa-code"></i><span>Web Tools</span></div>
+                <div class="cat-item"><i class="fas fa-tools"></i><span>Utility</span></div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="section-header">
+                <h2>POPULAR TOOLS</h2>
+            </div>
+            <div class="tool-list">
+                <div class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="tool-info">
+                        <h3>IP Information</h3>
+                        <p>Get information about any IP address</p>
+                    </div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-globe"></i></div>
+                    <div class="tool-info">
+                        <h3>DNS Lookup</h3>
+                        <p>Find DNS records for a domain</p>
+                    </div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+                <div class="tool-card">
+                    <div class="tool-icon"><i class="fas fa-terminal"></i></div>
+                    <div class="tool-info">
+                        <h3>Port Scanner</h3>
+                        <p>Scan open ports in a network</p>
+                    </div>
+                    <i class="fas fa-chevron-right arrow"></i>
+                </div>
+            </div>
+        </section>
+
+        <nav class="bottom-nav">
+            <div class="nav-item active"><i class="fas fa-home"></i><span>Home</span></div>
+            <div class="nav-item"><i class="fas fa-folder"></i><span>Category</span></div>
+            <div class="nav-item"><i class="fas fa-star"></i><span>Favorite</span></div>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
