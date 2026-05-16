@@ -3,98 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Tools UI</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Cyber Tools App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- CSS Section --- */
+        :root {
+            --accent-green: #00ff41;
+            --bg-black: #0d0d0d;
+            --card-gray: #1a1a1a;
+            --text-gray: #888;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        body { background-color: #000; color: #fff; overflow-x: hidden; }
+
+        /* Header & Top Bar */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; position: sticky; top: 0; background: #000; z-index: 10;
+        }
+        .logo { color: var(--accent-green); font-size: 1.2rem; font-weight: bold; letter-spacing: 2px; }
+        .icon-btn { font-size: 1.2rem; cursor: pointer; padding: 5px; }
+
+        /* Dropdown Menu (3 Dots) */
+        .dropdown { position: relative; }
+        .dropdown-content {
+            display: none; position: absolute; right: 0; top: 35px;
+            background: var(--card-gray); min-width: 150px; border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); z-index: 20;
+        }
+        .dropdown-content a {
+            color: white; padding: 12px; text-decoration: none; display: block; font-size: 0.9rem;
+        }
+        .dropdown-content a:hover { background: #333; }
+        .show { display: block !important; }
+
+        /* Side Drawer */
+        .drawer {
+            position: fixed; left: -280px; width: 280px; height: 100%;
+            background: var(--bg-black); transition: 0.4s; z-index: 100; padding: 20px;
+        }
+        .drawer.open { left: 0; }
+        .profile-section { text-align: center; margin-bottom: 30px; }
+        .profile-img { 
+            width: 70px; height: 70px; background: var(--accent-green); 
+            border-radius: 50%; margin: 0 auto 10px; display: flex; 
+            align-items: center; justify-content: center; font-size: 2rem; color: #000;
+        }
+        .vip-tag { 
+            background: transparent; border: 1px solid var(--accent-green); 
+            color: var(--accent-green); padding: 2px 10px; border-radius: 5px; font-size: 0.7rem;
+        }
+        .drawer-menu { list-style: none; }
+        .drawer-menu li { padding: 15px 0; border-bottom: 1px solid #222; cursor: pointer; font-size: 0.9rem; }
+        .drawer-menu i { margin-right: 15px; width: 20px; color: var(--text-gray); }
+
+        /* Search Bar */
+        .search-box { padding: 10px 20px; position: relative; }
+        .search-box input {
+            width: 100%; background: var(--card-gray); border: none;
+            padding: 12px 40px; border-radius: 10px; color: #fff; outline: none;
+        }
+        .search-box .fa-search { position: absolute; left: 35px; top: 23px; color: var(--text-gray); }
+        .search-box .fa-sliders-h { position: absolute; right: 35px; top: 23px; color: var(--accent-green); }
+
+        /* Sections */
+        .section { padding: 20px; }
+        .section-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .section-header h2 { font-size: 0.75rem; color: var(--text-gray); letter-spacing: 1px; }
+        .view-all { color: var(--accent-green); font-size: 0.8rem; cursor: pointer; }
+
+        /* Categories (Horizontal Scroll) */
+        .cat-container { display: flex; gap: 15px; overflow-x: auto; padding-bottom: 5px; }
+        .cat-container::-webkit-scrollbar { display: none; }
+        .cat-card {
+            min-width: 85px; background: var(--card-gray); padding: 15px;
+            border-radius: 12px; text-align: center; cursor: pointer; transition: 0.3s;
+        }
+        .cat-card:active { transform: scale(0.9); }
+        .cat-card i { color: var(--accent-green); font-size: 1.5rem; margin-bottom: 8px; display: block; }
+        .cat-card span { font-size: 0.7rem; }
+
+        /* Tools List */
+        .tool-card {
+            display: flex; align-items: center; background: var(--card-gray);
+            padding: 15px; border-radius: 12px; margin-bottom: 12px; cursor: pointer;
+        }
+        .tool-icon { 
+            background: #000; width: 45px; height: 45px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent-green); margin-right: 15px;
+        }
+        .tool-info h3 { font-size: 0.9rem; margin-bottom: 3px; }
+        .tool-info p { font-size: 0.7rem; color: var(--text-gray); }
+        .fa-chevron-right { margin-left: auto; color: #444; font-size: 0.8rem; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; max-width: 500px; /* For mobile look */
+            background: var(--bg-black); display: flex; justify-content: space-around;
+            padding: 10px 0; border-top: 1px solid #222; z-index: 50;
+        }
+        .nav-item { text-align: center; color: var(--text-gray); cursor: pointer; flex: 1; transition: 0.3s; }
+        .nav-item i { font-size: 1.2rem; display: block; margin-bottom: 3px; }
+        .nav-item span { font-size: 0.65rem; }
+        .nav-item.active { color: var(--accent-green); }
+
+        /* Overlay when drawer is open */
+        .overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); z-index: 90;
+        }
+        .overlay.active { display: block; }
+
+        /* Mobile Container (Optional for Desktop Preview) */
+        @media (min-width: 500px) {
+            body { display: flex; justify-content: center; background: #111; }
+            .app-container { width: 400px; background: #000; height: 100vh; position: relative; overflow-y: auto; }
+        }
+    </style>
 </head>
 <body>
 
-    <div id="drawer" class="drawer">
-        <div class="drawer-header">
-            <div class="profile-pic">
-                <i class="fas fa-user-secret"></i>
-            </div>
+<div class="app-container">
+    <div class="overlay" id="overlay"></div>
+
+    <div class="drawer" id="drawer">
+        <div class="profile-section">
+            <div class="profile-img"><i class="fas fa-user-ninja"></i></div>
             <h3>Cyber User</h3>
-            <span class="badge">VIP</span>
+            <span class="vip-tag">VIP MEMBER</span>
         </div>
-        <ul class="drawer-links">
-            <li><i class="fas fa-user"></i> Profile</li>
-            <li class="flex-between">
-                <span><i class="fas fa-moon"></i> Dark Mode</span>
-                <input type="checkbox" checked>
+        <ul class="drawer-menu">
+            <li><i class="fas fa-user-circle"></i> Profile</li>
+            <li style="display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fas fa-adjust"></i> Dark Mode</span>
+                <i class="fas fa-toggle-on" style="color: var(--accent-green);"></i>
             </li>
             <li><i class="fas fa-crown" style="color: gold;"></i> VIP Menu</li>
             <li><i class="fas fa-cog"></i> Settings</li>
-            <hr>
-            <li class="logout"><i class="fas fa-sign-out-alt"></i> Logout</li>
+            <li><i class="fas fa-share-alt"></i> Share App</li>
+            <li><i class="fas fa-star"></i> Rate Us</li>
+            <li style="color: #ff4444; margin-top: 20px;"><i class="fas fa-sign-out-alt" style="color: #ff4444;"></i> Logout</li>
         </ul>
     </div>
 
-    <div id="main-content">
-        <header>
-            <i class="fas fa-bars" id="menu-btn"></i>
-            <h1 class="logo">CYBER TOOLS</h1>
-            <i class="fas fa-ellipsis-v"></i>
-        </header>
-
-        <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" placeholder="Search tools...">
-            <i class="fas fa-sliders-h filter-icon"></i>
+    <header>
+        <i class="fas fa-bars icon-btn" id="menu-btn"></i>
+        <h1 class="logo">CYBER TOOLS</h1>
+        <div class="dropdown">
+            <i class="fas fa-ellipsis-v icon-btn" id="dots-btn"></i>
+            <div class="dropdown-content" id="dots-menu">
+                <a href="#"><i class="fas fa-info-circle"></i> About Us</a>
+                <a href="#"><i class="fas fa-headset"></i> Support</a>
+                <a href="#"><i class="fas fa-bug"></i> Report Bug</a>
+            </div>
         </div>
+    </header>
 
-        <section class="section">
-            <div class="section-header">
-                <h2>CATEGORIES</h2>
-                <span class="view-all">View All</span>
-            </div>
-            <div class="category-list">
-                <div class="cat-item"><i class="fas fa-network-wired"></i><span>Network</span></div>
-                <div class="cat-item"><i class="fas fa-shield-alt"></i><span>Security</span></div>
-                <div class="cat-item"><i class="fas fa-code"></i><span>Web Tools</span></div>
-                <div class="cat-item"><i class="fas fa-tools"></i><span>Utility</span></div>
-            </div>
-        </section>
-
-        <section class="section">
-            <div class="section-header">
-                <h2>POPULAR TOOLS</h2>
-            </div>
-            <div class="tool-list">
-                <div class="tool-card">
-                    <div class="tool-icon"><i class="fas fa-map-marker-alt"></i></div>
-                    <div class="tool-info">
-                        <h3>IP Information</h3>
-                        <p>Get information about any IP address</p>
-                    </div>
-                    <i class="fas fa-chevron-right arrow"></i>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-icon"><i class="fas fa-globe"></i></div>
-                    <div class="tool-info">
-                        <h3>DNS Lookup</h3>
-                        <p>Find DNS records for a domain</p>
-                    </div>
-                    <i class="fas fa-chevron-right arrow"></i>
-                </div>
-                <div class="tool-card">
-                    <div class="tool-icon"><i class="fas fa-terminal"></i></div>
-                    <div class="tool-info">
-                        <h3>Port Scanner</h3>
-                        <p>Scan open ports in a network</p>
-                    </div>
-                    <i class="fas fa-chevron-right arrow"></i>
-                </div>
-            </div>
-        </section>
-
-        <nav class="bottom-nav">
-            <div class="nav-item active"><i class="fas fa-home"></i><span>Home</span></div>
-            <div class="nav-item"><i class="fas fa-folder"></i><span>Category</span></div>
-            <div class="nav-item"><i class="fas fa-star"></i><span>Favorite</span></div>
-        </nav>
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search tools...">
+        <i class="fas fa-sliders-h"></i>
     </div>
 
-    <script src="script.js"></script>
+    <section class="section">
+        <div class="section-header">
+            <h2>CATEGORIES</h2>
+            <span class="view-all" onclick="alert('Viewing all categories...')">View All</span>
+        </div>
+        <div class="cat-container">
+            <div class="cat-card" onclick="catClick('Network')">
+                <i class="fas fa-network-wired"></i>
+                <span>Network</span>
+            </div>
+            <div class="cat-card" onclick="catClick('Security')">
+                <i class="fas fa-shield-alt"></i>
+                <span>Security</span>
+            </div>
+            <div class="cat-card" onclick="catClick('Web Tools')">
+                <i class="fas fa-code"></i>
+                <span>Web Tools</span>
+            </div>
+            <div class="cat-card" onclick="catClick('Utility')">
+                <i class="fas fa-tools"></i>
+                <span>Utility</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-header">
+            <h2>POPULAR TOOLS</h2>
+        </div>
+        <div id="tools-list">
+            <div class="tool-card" onclick="toolClick('IP Information')">
+                <div class="tool-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <div class="tool-info">
+                    <h3>IP Information</h3>
+                    <p>Get information about any IP address</p>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="tool-card" onclick="toolClick('DNS Lookup')">
+                <div class="tool-icon"><i class="fas fa-globe"></i></div>
+                <div class="tool-info">
+                    <h3>DNS Lookup</h3>
+                    <p>Find DNS records for a domain</p>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="tool-card" onclick="toolClick('Port Scanner')">
+                <div class="tool-icon"><i class="fas fa-terminal"></i></div>
+                <div class="tool-info">
+                    <h3>Port Scanner</h3>
+                    <p>Scan open ports in a network</p>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+    </section>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="navClick(this, 'Home')">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="navClick(this, 'Category')">
+            <i class="fas fa-th-large"></i>
+            <span>Category</span>
+        </div>
+        <div class="nav-item" onclick="navClick(this, 'Favorite')">
+            <i class="fas fa-star"></i>
+            <span>Favorite</span>
+        </div>
+    </nav>
+</div>
+
+<script>
+    /* --- JavaScript Section --- */
+    const drawer = document.getElementById('drawer');
+    const overlay = document.getElementById('overlay');
+    const dotsMenu = document.getElementById('dots-menu');
+
+    // Drawer Toggle
+    document.getElementById('menu-btn').addEventListener('click', () => {
+        drawer.classList.add('open');
+        overlay.classList.add('active');
+    });
+
+    overlay.addEventListener('click', () => {
+        drawer.classList.remove('open');
+        overlay.classList.remove('active');
+    });
+
+    // 3-Dot Menu Toggle
+    document.getElementById('dots-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        dotsMenu.classList.toggle('show');
+    });
+
+    // Close menus on outside click
+    window.onclick = (e) => {
+        if (!e.target.matches('#dots-btn')) {
+            if (dotsMenu.classList.contains('show')) {
+                dotsMenu.classList.remove('show');
+            }
+        }
+    };
+
+    // Bottom Nav Click
+    function navClick(el, name) {
+        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+        el.classList.add('active');
+        console.log("Navigated to: " + name);
+    }
+
+    // Category Click
+    function catClick(name) {
+        alert("Category Selected: " + name);
+    }
+
+    // Tool Click
+    function toolClick(name) {
+        alert("Opening Tool: " + name);
+    }
+</script>
+
 </body>
-</html>
+                </html>
