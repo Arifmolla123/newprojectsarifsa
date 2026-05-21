@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrix Intel Matrix - Cyber Tools</title>
+    <title>Cyber Intel Core - Cyber Tools</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root { 
@@ -39,7 +39,7 @@
         /* Advanced Cyber News Card */
         .news-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 24px; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); position: relative; }
         
-        /* হোভার করলে প্রিমিয়াম নিয়ন বর্ডার ও গ্লো */
+        /* হোভার গ্লো এফেক্ট */
         .news-card:hover { border-color: var(--accent); box-shadow: var(--glow); transform: translateY(-3px); }
         
         .news-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px; display: flex; justify-content: space-between; font-weight: 700; font-family: monospace; border-bottom: 1px solid #1a1a1a; padding-bottom: 10px; }
@@ -50,7 +50,7 @@
         
         .news-content { font-size: 0.88rem; color: var(--text-body); line-height: 1.6; text-align: left; margin-bottom: 18px; font-weight: 400; letter-spacing: 0.1px; }
         
-        /* আল্ট্রা ফ্রেস বাটন ডিজাইন */
+        /* আল্ট্রা ফ্রেশ বাটন */
         .read-more-btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(0, 255, 65, 0.04); border: 1px solid rgba(0, 255, 65, 0.15); color: var(--accent); padding: 12px 0; width: 100%; border-radius: 10px; font-size: 0.82rem; text-decoration: none; font-weight: 700; letter-spacing: 1px; transition: 0.3s; font-family: monospace; }
         .read-more-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: var(--glow); }
 
@@ -72,8 +72,8 @@
         
         <div class="intel-status">
             [<b>system@mainframe</b>]:~$ fetch --live-news<br>
-            [<b>link</b>]: <span style="color: var(--accent); font-weight: bold;">ENCRYPTED_PROXY_ACTIVE</span><br>
-            [<b>logs</b>]: PARSING CRYPTO & CYBER EXPLOITS<span class="blink">...</span>
+            [<b>link</b>]: <span style="color: var(--accent); font-weight: bold;">GITHUB_SECURE_LINK_OK</span><br>
+            [<b>logs</b>]: PARSING GLOBAL TECH EXPLOITS<span class="blink">...</span>
         </div>
 
         <div id="newsContainer">
@@ -92,30 +92,38 @@
 
         function fetchCyberNews() {
             let container = document.getElementById('newsContainer');
-            // ওপেন সোর্স রিয়েল-টাইম টেকনোলজি এপিআই লিন্ড
-            let apiUrl = "https://inshortsapi.vercel.app/news?category=technology";
+            
+            // 🔥 গিটহাব পেজেসের জন্য ১০০% ওয়ার্কিং এবং সিকিউরড ইন্টারন্যাশনাল এপিআই লিংক
+            let apiUrl = "https://saurav.tech/NewsAPI/top-headlines/category/technology/in.json";
 
             fetch(apiUrl)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success && data.data.length > 0) {
+                    if (data.status === "ok" && data.articles.length > 0) {
                         container.innerHTML = ""; // লোডার ক্লিয়ার
                         
-                        // সেরা ১০টি ফ্রেশ নিউজ ফিল্টারিং
-                        let newsList = data.data.slice(0, 10); 
+                        // শীর্ষ ১০টি ফ্রেশ নিউজ নেওয়া হচ্ছে
+                        let newsList = data.articles.slice(0, 10); 
                         
                         newsList.forEach(item => {
+                            // কিছু নিউজের ডেসক্রিপশন খালি থাকলে তা হ্যান্ডেল করার জন্য
+                            let description = item.description ? item.description : "Click below to read the detailed report on this cyber cyber technology event.";
+                            
+                            // তারিখ ফরম্যাট সুন্দর করা
+                            let rawDate = new Date(item.publishedAt);
+                            let formattedDate = rawDate.toLocaleDateString() || 'Live';
+
                             let card = document.createElement('div');
                             card.className = 'news-card';
                             
                             card.innerHTML = `
                                 <div class="news-meta">
-                                    <span><i class="fas fa-shield-alt"></i> SYSTEM: LIVE</span>
-                                    <span><i class="far fa-clock"></i> ${item.time || 'Live'}</span>
+                                    <span><i class="fas fa-shield-alt"></i> SOURCE: ${item.source.name.toUpperCase()}</span>
+                                    <span><i class="far fa-clock"></i> ${formattedDate}</span>
                                 </div>
                                 <div class="news-title">${item.title}</div>
-                                <div class="news-content">${item.content}</div>
-                                <a href="${item.readMoreUrl}" target="_blank" class="read-more-btn">
+                                <div class="news-content">${description}</div>
+                                <a href="${item.url}" target="_blank" class="read-more-btn">
                                     <span>DECRYPT FULL REPORT</span> <i class="fas fa-unlock-alt"></i>
                                 </a>
                             `;
@@ -133,4 +141,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
