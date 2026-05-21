@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Cyber Tools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --accent: #00ff41; --bg: #0d0d0d; --card: #1a1a1a; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        
+        body { background-color: #000; color: #fff; line-height: 1.6; }
+
+        /* Header */
+        .header {
+            display: flex; align-items: center; padding: 20px;
+            position: sticky; top: 0; background: #000; z-index: 10;
+        }
+        .header a { color: var(--accent); font-size: 1.5rem; margin-right: 20px; text-decoration: none; }
+        .header h2 { font-size: 1.2rem; letter-spacing: 1px; }
+
+        .container { padding: 20px; }
+
+        /* Quick Info */
+        .info-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 30px;
+        }
+        .info-item {
+            background: var(--card); padding: 20px; border-radius: 15px;
+            text-align: center; border: 1px solid #222;
+        }
+        .info-item i { font-size: 1.5rem; color: var(--accent); margin-bottom: 10px; }
+        .info-item p { font-size: 0.75rem; color: #ccc; }
+
+        /* Contact Form */
+        .contact-form {
+            background: var(--card); padding: 25px; border-radius: 20px;
+            border: 1px solid #222; margin-bottom: 30px;
+        }
+        .contact-form h3 { color: var(--accent); margin-bottom: 20px; font-size: 1.1rem; }
+
+        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group i { position: absolute; left: 15px; top: 15px; color: #444; }
+        
+        .input-group input, .input-group textarea {
+            width: 100%; background: #000; border: 1px solid #333;
+            padding: 12px 15px 12px 45px; border-radius: 10px; color: #fff;
+            outline: none; transition: 0.3s;
+        }
+        .input-group textarea { padding-left: 15px; height: 120px; resize: none; }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--accent); }
+
+        .send-btn {
+            width: 100%; background: var(--accent); color: #000;
+            border: none; padding: 15px; border-radius: 10px;
+            font-weight: bold; font-size: 1rem; cursor: pointer;
+            transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .send-btn:active { transform: scale(0.95); }
+
+        /* Telegram Support Button */
+        .tg-support {
+            display: flex; align-items: center; justify-content: center;
+            background: #22a2df; color: #fff; padding: 15px;
+            border-radius: 15px; text-decoration: none; font-weight: bold; margin-top: 10px;
+        }
+        .tg-support i { margin-right: 10px; font-size: 1.2rem; }
+
+        .footer-text { text-align: center; margin-top: 30px; font-size: 0.7rem; color: #444; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="index.html"><i class="fas fa-arrow-left"></i></a>
+        <h2>Contact Support</h2>
+    </div>
+
+    <div class="container">
+        
+        <div class="info-grid">
+            <div class="info-item">
+                <i class="fas fa-envelope"></i>
+                <p>Email Us<br><strong>xmarthacker2@gmail.com</strong></p>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-headset"></i>
+                <p>24/7 Support<br><strong>Online</strong></p>
+            </div>
+        </div>
+
+        <div class="contact-form">
+            <h3>Send Message</h3>
+            <form action="https://formsubmit.co/xmarthacker2@gmail.com" method="POST">
+                
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+                
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="name" placeholder="Your Name" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-at"></i>
+                    <input type="email" name="email" placeholder="Email Address" required>
+                </div>
+                <div class="input-group">
+                    <textarea name="message" placeholder="Write your problem/message here..." required></textarea>
+                </div>
+                <button type="submit" class="send-btn">
+                    <i class="fas fa-paper-plane"></i> SUBMIT NOW
+                </button>
+            </form>
+        </div>
+
+        <p style="text-align: center; color: #555; font-size: 0.8rem; margin-bottom: 10px;">Fastest response via Telegram</p>
+        <a href="https://t.me/VIP_ARIF" class="tg-support">
+            <i class="fab fa-telegram-plane"></i>TELEGRAM SUPPORT
+        </a>
+
+        <div class="footer-text">
+            We usually respond within 24 hours. <br>
+            Cyber Tools v1.5.0
+        </div>
+    </div>
+
+</body>
+</html>

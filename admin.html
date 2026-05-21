@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control Panel - Cyber Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --accent: #ff3e3e; --green: #00ff41; --bg: #000; --card: #0a0a0a; --border: #222; --vip: #ffd700; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        
+        body { background: var(--bg); color: #fff; padding: 15px; display: flex; flex-direction: column; min-height: 100vh; align-items: center; justify-content: center; }
+        
+        /* Login Box */
+        .login-container { background: var(--card); border: 1px solid #333; padding: 30px; border-radius: 15px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 0 20px rgba(255, 62, 62, 0.1); }
+        .login-container i { color: var(--accent); font-size: 3rem; margin-bottom: 15px; }
+        .login-container h2 { font-size: 1.4rem; margin-bottom: 20px; font-family: monospace; letter-spacing: 2px; }
+        .login-container input { width: 100%; background: #000; border: 1px solid #444; padding: 12px; border-radius: 8px; color: var(--green); font-size: 1rem; text-align: center; outline: none; margin-bottom: 15px; font-family: monospace; }
+        .login-container input:focus { border-color: var(--accent); }
+        .login-btn { background: var(--accent); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; transition: 0.3s; letter-spacing: 1px; }
+        .login-btn:hover { background: #cc2a2a; box-shadow: 0 0 10px rgba(255, 62, 62, 0.4); }
+
+        /* Dashboard */
+        .admin-dashboard { display: none; width: 100%; max-width: 600px; animation: fadeIn 0.5s ease; }
+        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px dashed #333; padding-bottom: 15px; }
+        .dash-header h1 { font-size: 1.2rem; color: var(--green); font-family: monospace; letter-spacing: 1px; }
+        .logout-btn { background: #111; color: #fff; border: 1px solid #333; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 5px; }
+        .logout-btn:hover { background: var(--accent); border-color: var(--accent); }
+
+        /* Counters Row */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-card { background: var(--card); border: 1px solid #111; padding: 12px 5px; border-radius: 10px; text-align: center; }
+        .stat-card h3 { font-size: 0.65rem; color: #666; margin-bottom: 5px; text-transform: uppercase; font-weight: bold; }
+        .stat-card p { font-size: 1.3rem; font-weight: bold; color: #fff; font-family: monospace; }
+        .stat-card p.active-count { color: var(--green); }
+
+        /* 📱 মোবাইল ফ্রেন্ডলি ইউজার লিস্ট কার্ড লেআউট (টেবিল বাদ দিয়ে নতুন ডিজাইন) */
+        .user-list-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 15px; }
+        .list-header { display: flex; justify-content: space-between; font-size: 0.75rem; color: #666; font-weight: bold; text-transform: uppercase; padding-bottom: 10px; border-bottom: 1px solid #111; margin-bottom: 12px; }
+        
+        .user-row { display: flex; justify-content: space-between; align-items: center; background: #050505; border: 1px solid #151515; padding: 12px; border-radius: 8px; }
+        
+        .user-info { text-align: left; line-height: 1.4; }
+        .user-info .name { font-size: 0.9rem; font-weight: bold; color: var(--green); font-family: monospace; }
+        .user-info .key { font-size: 0.75rem; color: #aaa; font-family: monospace; }
+        .user-info .plan { font-size: 0.7rem; color: var(--vip); font-weight: bold; font-family: monospace; margin-top: 2px; }
+
+        /* লাল ডিলিট ট্র্যাশ বাটন */
+        .delete-btn { background: rgba(255, 62, 62, 0.1); border: 1px solid var(--accent); color: var(--accent); width: 36px; height: 36px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s; font-size: 0.9rem; }
+        .delete-btn:hover { background: var(--accent); color: #fff; box-shadow: 0 0 10px rgba(255, 62, 62, 0.4); }
+
+        .no-user { padding: 20px; text-align: center; color: #444; font-size: 0.8rem; font-family: monospace; line-height: 1.4; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="login-container" id="loginBox">
+        <i class="fas fa-user-shield"></i>
+        <h2>ADMIN PANEL AUTH</h2>
+        <input type="password" id="adminPassInput" placeholder="ENTER SECRET PASSWORD">
+        <button class="login-btn" onclick="verifyAdmin()">ACCESS SYSTEM</button>
+    </div>
+
+    <div class="admin-dashboard" id="adminDashboard">
+        <div class="dash-header">
+            <h1>[+] CYBER CORE CONTROL</h1>
+            <button class="logout-btn" onclick="logoutAdmin()"><i class="fas fa-power-off"></i> Exit</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>System Status</h3>
+                <p style="color: var(--green); font-size: 1rem;">ONLINE</p>
+            </div>
+            <div class="stat-card">
+                <h3>Active Terminals</h3>
+                <p class="active-count" id="liveTerminals">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total VIP Users</h3>
+                <p id="totalUsersCount">0</p>
+            </div>
+        </div>
+
+        <div class="user-list-box">
+            <div class="list-header">
+                <span>User Parameters</span>
+                <span>Action</span>
+            </div>
+            
+            <div id="userListContainer">
+                </div>
+            
+            <div class="no-user" id="noUserMsg" style="display: none;">[-] NO ACTIVE VIP SESSIONS DETECTING IN BROWSERS LOCALSTORAGE MEMORY</div>
+        </div>
+    </div>
+
+    <script>
+        // অ্যাডমিন পাসওয়ার্ড ভেরিফিকেশন
+        function verifyAdmin() {
+            let pass = document.getElementById('adminPassInput').value;
+            let correctPass = "arif123"; // 🔥 পাসওয়ার্ড পরিবর্তন করতে চাইলে এখানে চেঞ্জ করুন
+
+            if (pass === correctPass) {
+                document.getElementById('loginBox').style.display = 'none';
+                document.getElementById('adminDashboard').style.display = 'block';
+                document.body.style.justifyContent = 'flex-start';
+                document.body.style.paddingTop = '30px';
+                
+                loadUserDatabase();
+                startLiveSimulation();
+            } else {
+                alert("[-] ACCESS DENIED: INVALID SECURITY PASSWORD!");
+            }
+        }
+
+        // ব্রাউজার মেমোরি থেকে লাইভ ইউজারের ডাটা লোড করা
+        function loadUserDatabase() {
+            let listContainer = document.getElementById('userListContainer');
+            let noUserMsg = document.getElementById('noUserMsg');
+            let totalCount = document.getElementById('totalUsersCount');
+
+            // লোকাল স্টোরেজ থেকে রিয়াল ডাটা রিড করা হচ্ছে
+            let vUser = localStorage.getItem('vipUser');
+            let vKey = localStorage.getItem('vipKey');
+            let vExpiry = localStorage.getItem('vipExpiryDate') || 'LIFETIME';
+            let vStatus = localStorage.getItem('vipStatus');
+
+            if (vUser && vStatus === 'Active') {
+                listContainer.innerHTML = `
+                    <div class="user-row">
+                        <div class="user-info">
+                            <div class="name">[+] USER: ${vUser.toUpperCase()}</div>
+                            <div class="key">KEY: ${vKey}</div>
+                            <div class="plan">PLAN: ${vExpiry}</div>
+                        </div>
+                        <div>
+                            <button class="delete-btn" onclick="terminateUser()" title="Delete User">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                noUserMsg.style.display = 'none';
+                totalCount.innerText = "1";
+                document.getElementById('liveTerminals').innerText = "1";
+            } else {
+                listContainer.innerHTML = "";
+                noUserMsg.style.display = 'block';
+                totalCount.innerText = "0";
+                document.getElementById('liveTerminals').innerText = "0";
+            }
+        }
+
+        // ইউজারকে কিক আউট এবং চিরতরে ডিলিট করার নিখুঁত ফাংশন
+        function terminateUser() {
+            let confirmWipe = confirm("Are you sure you want to delete this user? They will lose VIP access immediately!");
+            
+            if (confirmWipe) {
+                // ইউজারের সমস্ত সেশন মেমোরি ডিলিট
+                localStorage.removeItem('vip_status');
+                localStorage.removeItem('vip_user');
+                localStorage.removeItem('vipUser');
+                localStorage.removeItem('vipKey');
+                localStorage.removeItem('vipStatus');
+                localStorage.removeItem('vipExpiryDate');
+
+                alert("[+] User access revoked and deleted successfully.");
+                loadUserDatabase(); // বক্স ইনস্ট্যান্ট রিফ্রেশ করবে
+            }
+        }
+
+        // লাইভ টার্মিনাল কাউন্টার সিমুলেশন (প্রফেশনাল লুকের জন্য)
+        function startLiveSimulation() {
+            let activeTerminals = document.getElementById('liveTerminals');
+            if (localStorage.getItem('vipStatus') === 'Active') {
+                setInterval(() => {
+                    let randomActive = Math.floor(Math.random() * 3) + 1; // ১ থেকে ৩ জনের মধ্যে র্যান্ডম ফ্লাকচুয়েট করবে
+                    activeTerminals.innerText = randomActive;
+                }, 4000);
+            }
+        }
+
+        // প্যানেল থেকে এক্সিট/লগআউট করা
+        function logoutAdmin() {
+            document.getElementById('adminPassInput').value = "";
+            document.getElementById('adminDashboard').style.display = 'none';
+            document.getElementById('loginBox').style.display = 'block';
+            document.body.style.justifyContent = 'center';
+            document.body.style.paddingTop = '20px';
+        }
+    </script>
+</body>
+</html>

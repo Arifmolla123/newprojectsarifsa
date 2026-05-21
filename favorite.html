@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Favorites</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --accent: #00ff41; --bg: #0d0d0d; --card: #1a1a1a; --text-muted: #888; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #000; color: #fff; padding-bottom: 90px; }
+
+        header { padding: 15px 20px; border-bottom: 1px solid #222; background: #000; text-align: center; position: sticky; top: 0; z-index: 100; }
+        .logo { color: var(--accent); font-weight: bold; letter-spacing: 2px; }
+
+        #fav-list { padding: 20px; }
+
+        /* Match Index Card Style */
+        .tool-card { 
+            display: flex; align-items: center; background: var(--card); 
+            padding: 16px; border-radius: 15px; margin-bottom: 12px; border: 1px solid #222;
+            text-decoration: none; color: white;
+        }
+        .tool-icon { background: #000; width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--accent); margin-right: 15px; }
+        .remove-btn { color: #ff3e3e; margin-left: auto; padding: 10px; cursor: pointer; z-index: 10; }
+
+        /* Bottom Nav - Match with Index */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 1000; }
+        .nav-btn { text-align: center; color: var(--text-muted); text-decoration: none; flex: 1; }
+        .nav-btn.active { color: var(--accent); }
+        .nav-btn i { display: block; font-size: 1.2rem; margin-bottom: 4px; }
+        .nav-btn span { font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+
+    <header><h1 class="logo">SAVED TOOLS</h1></header>
+
+    <div id="fav-list"></div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-btn"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="category.html" class="nav-btn"><i class="fas fa-th-large"></i><span>Category</span></a>
+        <a href="favorite.html" class="nav-btn active"><i class="fas fa-star" style="color: gold;"></i><span>Favorite</span></a>
+    </nav>
+
+    <script>
+        // কীবোর্ড ওপেন হলে ফুটার মেনু হাইড করার লজিক (অন্যান্য পেজের সাথে ম্যাচড)
+        const bottomNav = document.querySelector('.bottom-nav');
+        const originalHeight = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            if (window.innerHeight < originalHeight - 50) {
+                bottomNav.style.display = 'none';
+            } else {
+                bottomNav.style.display = 'flex';
+            }
+        });
+
+        // ফেভারিট লিস্ট রেন্ডার করার ফাংশন
+        function render() {
+            const list = document.getElementById('fav-list');
+            const favs = JSON.parse(localStorage.getItem('CyberArif_Vault')) || [];
+
+            if (favs.length === 0) {
+                list.innerHTML = `<div style="text-align:center; margin-top:100px; color:#555;"><i class="fas fa-star" style="font-size:3rem; margin-bottom: 15px; color: #222;"></i><p>No Favorites Yet</p></div>`;
+                return;
+            }
+
+            list.innerHTML = favs.map(item => `
+                <div class="tool-card">
+                    <a href="${item.link}" style="display:flex; align-items:center; flex:1; text-decoration:none; color:white;">
+                        <div class="tool-icon"><i class="fas ${item.icon}"></i></div>
+                        <h4>${item.name}</h4>
+                    </a>
+                    <i class="fas fa-trash-alt remove-btn" onclick="removeTool('${item.id}')"></i>
+                </div>
+            `).join('');
+        }
+
+        // ফেভারিট থেকে ডিলিট করার ফাংশন
+        function removeTool(id) {
+            let favs = JSON.parse(localStorage.getItem('CyberArif_Vault')) || [];
+            favs = favs.filter(i => i.id !== id);
+            localStorage.setItem('CyberArif_Vault', JSON.stringify(favs));
+            render();
+        }
+
+        window.onload = render;
+    </script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories - Cyber Tools</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --accent: #00ff41; --bg: #0d0d0d; --card: #1a1a1a; --text-muted: #888; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #000; color: #fff; overflow-x: hidden; padding-bottom: 90px; }
+
+        header { display: flex; justify-content: space-between; padding: 15px 20px; align-items: center; position: sticky; top: 0; background: #000; z-index: 100; border-bottom: 1px solid #222; }
+        .logo { color: var(--accent); font-weight: bold; letter-spacing: 2px; }
+
+        /* Drawer Design - Match with your Index */
+        .drawer { position: fixed; left: -280px; width: 280px; height: 100%; background: #111; transition: 0.3s; z-index: 200; padding: 25px; border-right: 1px solid #222; }
+        .drawer.open { left: 0; }
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 150; }
+        .overlay.active { display: block; }
+        .drawer-menu { list-style: none; margin-top: 30px; }
+        .drawer-menu li { padding: 15px 0; border-bottom: 1px solid #222; }
+        .drawer-menu a { text-decoration: none; color: #fff; display: flex; align-items: center; }
+        .drawer-menu i { margin-right: 15px; color: var(--accent); }
+
+        /* Category Grid */
+        .grid-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px; }
+        .cat-card {
+            background: var(--card); border-radius: 20px; padding: 25px 15px;
+            text-align: center; border: 1px solid #222; position: relative; transition: 0.3s;
+        }
+        .cat-card i.main-icon { font-size: 2.2rem; color: var(--accent); margin-bottom: 10px; display: block; }
+        .cat-card span { font-weight: 600; font-size: 0.9rem; }
+
+        /* Star Button */
+        .fav-star { position: absolute; top: 12px; right: 12px; color: #333; font-size: 1.1rem; cursor: pointer; transition: 0.3s; }
+        .fav-star.active { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+
+        /* Bottom Nav - Match with Index */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #222; z-index: 1000; }
+        .nav-btn { text-align: center; color: var(--text-muted); text-decoration: none; flex: 1; }
+        .nav-btn.active { color: var(--accent); }
+        .nav-btn i { display: block; font-size: 1.2rem; margin-bottom: 4px; }
+        .nav-btn span { font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="drawer" id="drawer">
+        <h3 style="color:var(--accent)">MENU</h3>
+        <ul class="drawer-menu">
+            <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+            <li onclick="checkVipAccess()"><a href="#"><i class="fas fa-crown" style="color: gold;"></i> VIP Menu</a></li>
+            <li><a href="#"><i class="fas fa-info-circle"></i> About Us</a></li>
+            <li onclick="shareApp()"><a href="#"><i class="fas fa-share-alt"></i> Share App</a></li>
+        </ul>
+    </div>
+
+    <header>
+        <i class="fas fa-bars" id="menu-btn" style="cursor:pointer"></i>
+        <div class="logo">CATEGORIES</div>
+        <i class="fas fa-bell"></i>
+    </header>
+
+    <div class="grid-container">
+        <div class="cat-card">
+            <i class="fas fa-star fav-star" onclick="toggleTool(this, 'id_net', 'Network Tools', 'network.html', 'fa-wifi')"></i>
+            <i class="fas fa-wifi main-icon"></i>
+            <span>Network</span>
+        </div>
+        <div class="cat-card">
+            <i class="fas fa-star fav-star" onclick="toggleTool(this, 'id_web', 'Web Tools', 'web.html', 'fa-code')"></i>
+            <i class="fas fa-code main-icon"></i>
+            <span>Web Tools</span>
+        </div>
+        <div class="cat-card">
+            <i class="fas fa-star fav-star" onclick="toggleTool(this, 'id_sec', 'Security Tools', 'security.html', 'fa-shield-alt')"></i>
+            <i class="fas fa-shield-alt main-icon"></i>
+            <span>Security</span>
+        </div>
+        <div class="cat-card">
+            <i class="fas fa-star fav-star" onclick="toggleTool(this, 'id_pri', 'Privacy Tools', 'privacy.html', 'fa-user-secret')"></i>
+            <i class="fas fa-user-secret main-icon"></i>
+            <span>Privacy</span>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-btn"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="category.html" class="nav-btn active"><i class="fas fa-th-large" style="color: gold;"></i><span>Category</span></a>
+        <a href="favorite.html" class="nav-btn"><i class="fas fa-star"></i><span>Favorite</span></a>
+    </nav>
+
+    <script>
+        // কীবোর্ড ওপেন হলে ফুটার মেনু হাইড করার লজিক
+        const bottomNav = document.querySelector('.bottom-nav');
+        const originalHeight = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            if (window.innerHeight < originalHeight - 50) {
+                bottomNav.style.display = 'none';
+            } else {
+                bottomNav.style.display = 'flex';
+            }
+        });
+
+        // VIP Access Logic (Name + Secret Word Method)
+        function checkVipAccess() {
+            if (localStorage.getItem('vip_status') === 'active') {
+                window.location.href = "vip.html";
+                return;
+            }
+
+            let userName = prompt("Enter Registered Name / Phone (টাকা দেওয়ার সময় যা দিয়েছেন):");
+            if (!userName) return;
+
+            let inputKey = prompt("Enter your VIP Key:");
+            if (!inputKey) return;
+
+            const secretWord = "ARIF_KING_786"; 
+            const validKey = btoa(userName.trim().toLowerCase() + secretWord).substring(0, 10).toUpperCase();
+
+            if (inputKey.trim().toUpperCase() === validKey) {
+                localStorage.setItem('vip_status', 'active');
+                localStorage.setItem('vip_user', userName.trim());
+                alert("Access Granted! Welcome to VIP.");
+                window.location.href = "vip.html";
+            } else {
+                alert("Invalid Key! আপনার নাম বা কী ভুল হয়েছে।");
+            }
+        }
+
+        function toggleTool(element, id, name, link, icon) {
+            let favorites = JSON.parse(localStorage.getItem('CyberArif_Vault')) || [];
+            const index = favorites.findIndex(item => item.id === id);
+
+            if (index > -1) {
+                favorites.splice(index, 1);
+                element.classList.remove('active');
+            } else {
+                favorites.push({ id, name, link, icon });
+                element.classList.add('active');
+            }
+            localStorage.setItem('CyberArif_Vault', JSON.stringify(favorites));
+        }
+
+        window.onload = () => {
+            let favorites = JSON.parse(localStorage.getItem('CyberArif_Vault')) || [];
+            document.querySelectorAll('.fav-star').forEach(star => {
+                const id = star.getAttribute('onclick').split("'")[1];
+                if (favorites.some(item => item.id === id)) {
+                    star.classList.add('active');
+                }
+            });
+        }
+
+        // Drawer Logic
+        const drawer = document.getElementById('drawer');
+        const overlay = document.getElementById('overlay');
+        document.getElementById('menu-btn').onclick = () => { drawer.classList.add('open'); overlay.classList.add('active'); }
+        overlay.onclick = () => { drawer.classList.remove('open'); overlay.classList.remove('active'); }
+
+        // Share App
+        function shareApp() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Cyber Tools Pro',
+                    text: 'Check out this awesome Cyber Tools App by Arif!',
+                    url: window.location.href
+                }).catch(console.error);
+            } else {
+                alert("Share link: " + window.location.href);
+            }
+        }
+    </script>
+</body>
+</html>
