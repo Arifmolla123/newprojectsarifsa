@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Hacking Apps - Arif Toolbox</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap');
+
+:root{
+  --accent: #00ffff;
+  --bg: #050505;
+  --text: #00ffcc;
+  --card-bg: rgba(0, 255, 255, 0.03);
+  --border: rgba(0, 255, 255, 0.15);
+  --glow: 0 0 15px rgba(0, 255, 255, 0.2);
+}
+
+*{ box-sizing: border-box; margin: 0; padding: 0; }
+
+body{
+  padding: 16px 16px 60px;
+  min-height: 100vh;
+  font-family: 'Orbitron', 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: #fff;
+  background-image: radial-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+/* Header Row styling */
+.header-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.back-btn{
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  background: rgba(0, 255, 255, 0.05);
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: bold;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  transition: 0.3s;
+}
+.back-btn:hover {
+  background: var(--accent);
+  color: #000;
+  box-shadow: var(--glow);
+}
+
+.page-title{
+  font-size: 1.1rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  color: #fff;
+  text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+.page-title span { color: var(--accent); }
+
+/* Search Box Customization */
+.search-box{
+  margin-bottom: 20px;
+  position: relative;
+}
+.search-box input{
+  width: 100%;
+  padding: 14px 14px 14px 42px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #0d0d0d;
+  color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+  font-family: sans-serif;
+  transition: 0.3s;
+}
+.search-box input:focus{
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+.search-box::before {
+  content: "🔍";
+  position: absolute;
+  left: 15px;
+  top: 14px;
+  font-size: 0.95rem;
+  opacity: 0.7;
+}
+
+/* Categories UI */
+.category-box{
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 5px 0 15px;
+  margin-bottom: 15px;
+}
+.category-box::-webkit-scrollbar { display: none; } /* Hide Scrollbar */
+
+.category-box button{
+  padding: 10px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: #0d0d0d;
+  color: #aaa;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: bold;
+  font-family: 'Orbitron', sans-serif;
+  transition: 0.3s;
+}
+.category-box button.active{
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+/* Premium App Cards layout */
+.app-card{
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 18px;
+  margin-bottom: 18px;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+.app-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+  transform: translateY(-2px);
+}
+
+.row{
+  display: flex;
+  gap: 16px;
+}
+.app-icon-box {
+  font-size: 36px;
+  background: rgba(0, 0, 0, 0.4);
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+
+.app-details { flex: 1; }
+
+.app-title{
+  font-size: 1.05rem;
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: #fff;
+  text-align: left;
+}
+.app-card:hover .app-title { color: var(--accent); }
+
+.app-desc{
+  font-size: 0.82rem;
+  margin-bottom: 15px;
+  color: #b5b5b5;
+  line-height: 1.5;
+  text-align: left;
+  font-family: sans-serif;
+}
+
+/* Glow Download button */
+.download-btn{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 255, 255, 0.3);
+  background: rgba(0, 255, 255, 0.03);
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 0.85rem;
+  text-align: center;
+  cursor: pointer;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.5px;
+  transition: 0.3s;
+}
+.download-btn:hover{
+  background: var(--accent);
+  color: #000;
+  border-color: var(--accent);
+  box-shadow: var(--glow);
+}
+
+/* 3-dot Dropdown System */
+#quickMenu button{
+  font-family: 'Orbitron', sans-serif;
+  transition: 0.2s;
+}
+</style>
+</head>
+<body>
+
+<div class="header-row">
+  <button class="back-btn" onclick="goHome()"><i class="fas fa-chevron-left"></i> Back</button>
+
+  <div class="page-title">🔥 ALL_HACKING_<span>APPS</span></div>
+
+  <div style="position:relative;">
+    <button class="back-btn" id="menuBtn"><i class="fas fa-eye"></i></button>
+
+    <div id="quickMenu" style="
+      display:none;
+      position:absolute;
+      top:45px;
+      right:0;
+      background:#0a0a0a;
+      border:1px solid var(--accent);
+      border-radius:12px;
+      min-width:180px;
+      z-index:1000;
+      padding:6px;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    ">
+      <button style="
+        width:100%; padding:12px 10px; 
+        background:transparent; border:none;
+        color:var(--accent); font-weight:600;
+        text-align:left; border-bottom:1px solid #002222;
+        font-size: 0.75rem; cursor:pointer; border-radius: 6px;
+      "
+      onmouseover="this.style.background='#001a1a'"
+      onmouseout="this.style.background='transparent'"
+      onclick="goToPage('setting bar.html')"><i class="fas fa-cog"></i> App install problem</button>
+
+      <button style="
+        width:100%; padding:12px 10px; 
+        background:transparent; border:none;
+        color:var(--accent); font-weight:600;
+        text-align:left; font-size: 0.75rem; cursor:pointer; border-radius: 6px;
+      "
+      onmouseover="this.style.background='#001a1a'"
+      onmouseout="this.style.background='transparent'"
+      onclick="goToPage('favorite.html')"><i class="fas fa-star"></i> Favorite Apps</button>
+    </div>
+  </div>
+</div>
+
+<div class="search-box">
+  <input id="search" type="text" placeholder="Search targets or tools..." oninput="filterApps()" />
+</div>
+
+<div class="category-box" id="catBox">
+  <button data-cat="all" class="active" onclick="setCategory('all', this)">All Codes</button>
+  <button data-cat="prank" onclick="setCategory('prank', this)">Prank</button>
+  <button data-cat="hack" onclick="setCategory('hack', this)">Hack</button>
+  <button data-cat="payment" onclick="setCategory('payment', this)">Fake Payment</button>
+  <button data-cat="tools" onclick="setCategory('tools', this)">Tools</button>
+</div>
+
+<div id="appList">
+
+  <div class="app-card" data-cat="prank">
+    <div class="row">
+      <div class="app-icon-box">💀</div>
+      <div class="app-details">
+        <div class="app-title">Virus Prank App 1</div>
+        <div class="app-desc">Realistic virus effect prank app (safe & fun).</div>
+        <button class="download-btn" onclick="downloadApp('https://www.mediafire.com/file/awubimchglh64fm/bhootni.apk/file')"><i class="fas fa-download"></i> DOWNLOAD</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-card" data-cat="hack">
+    <div class="row">
+      <div class="app-icon-box">🔓</div>
+      <div class="app-details">
+        <div class="app-title">Mobile Lock Break Simulator</div>
+        <div class="app-desc">Simulate breaking phone lock (for entertainment only).</div>
+        <button class="download-btn" onclick="downloadApp('https://www.mediafire.com/folder/48fq7fdthlv79/Instagram+hack')"><i class="fas fa-download"></i> DOWNLOAD</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-card" data-cat="payment">
+    <div class="row">
+      <div class="app-icon-box">🟣</div>
+      <div class="app-details">
+        <div class="app-title">Fake PhonePe Payment</div>
+        <div class="app-desc">Prank anyone with fake payment (for fun only).</div>
+        <button class="download-btn" onclick="downloadApp('https://drive.google.com/file/d/17SJ2bPO7kf9_DczIdhgPCatJhFkYTv9r/view?usp=drivesdk','Arif')"><i class="fas fa-download"></i> DOWNLOAD</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-card" data-cat="payment">
+    <div class="row">
+      <div class="app-icon-box">💸</div>
+      <div class="app-details">
+        <div class="app-title">Fake Fampay Payment</div>
+        <div class="app-desc">Prank your friends with fake payment UI.</div>
+        <button class="download-btn" onclick="downloadApp('https://drive.google.com/file/d/17SJ2bPO7kf9_DczIdhgPCatJhFkYTv9r/view?usp=drivesdk','fampay')"><i class="fas fa-download"></i> DOWNLOAD</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-card" data-cat="prank">
+    <div class="row">
+      <div class="app-icon-box">🦠</div>
+      <div class="app-details">
+        <div class="app-title">Virus Prank 2</div>
+        <div class="app-desc">Realistic hacker virus prank effects.</div>
+        <button class="download-btn" onclick="downloadApp('https://www.mediafire.com/folder/omivsmg72xkm0/Arif+hacking+virus')"><i class="fas fa-download"></i> DOWNLOAD</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-card" data-cat="tools">
+    <div class="row">
+      <div class="app-icon-box">🗨️</div>
+      <div class="app-details">
+        <div class="app-title">Fake Chat (WA, FB & SMS)</div>
+        <div class="app-desc">Create 100% realistic fake chat simulations for WhatsApp, Facebook, and Messages.</div>
+        <button class="download-btn" onclick="downloadApp('https://drive.google.com/file/d/1X5Wlsij18c4JgoBVz7gTf1YDxUR10cWC/view?usp=drivesdk')"><i class="fas fa-download"></i> DOWNLOAD</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-card" data-cat="tools">
+    <div class="row">
+      <div class="app-icon-box">💳</div>
+      <div class="app-details">
+        <div class="app-title">Fake Card Maker</div>
+        <div class="app-desc">All-in-one fake card generator tool for entertainment and templates.</div>
+        <button class="download-btn" onclick="downloadApp('https://drive.google.com/file/d/171TfpVPqCaHzeltqKqqWtiPi7MWBFKPw/view?usp=drivesdk')"><i class="fas fa-download"></i> DOWNLOAD</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-card" data-cat="tools">
+    <div class="row">
+      <div class="app-icon-box">😈</div>
+      <div class="app-details">
+        <div class="app-title">Labalabi WhatsApp</div>
+        <div class="app-desc">WhatsApp loop messaging simulation tool for funny pranks.</div>
+        <button class="download-btn" onclick="downloadApp('https://drive.google.com/file/d/1uABhHdA7OG2ydPBVgGyJOm2SRmLAlrP7/view?usp=drivesdk')"><i class="fas fa-download"></i> DOWNLOAD</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-card" data-cat="tools">
+    <div class="row">
+      <div class="app-icon-box">🧬</div>
+      <div class="app-details">
+        <div class="app-title">App Cloner Pro</div>
+        <div class="app-desc">Modify and clone package files, custom icons, names, and parallel settings easily.</div>
+        <button class="download-btn" onclick="downloadApp('https://drive.google.com/file/d/170NnDKBwAOrFFXaFelIf8B1BWtyvUkkR/view?usp=drivesdk')"><i class="fas fa-download"></i> DOWNLOAD</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Core Navigation
+function goHome(){
+  window.location.href = "index.html";
+}
+
+// 3-Dot Menu Handling
+const menuBtn = document.getElementById('menuBtn');
+const quickMenu = document.getElementById('quickMenu');
+
+menuBtn.addEventListener('click', (e)=>{
+  e.stopPropagation();
+  quickMenu.style.display = quickMenu.style.display === 'block' ? 'none' : 'block';
+});
+
+document.body.addEventListener('click', () => quickMenu.style.display = 'none');
+
+function goToPage(url){ window.location.href = url; }
+
+// Dynamic Filtering Engine
+let currentCategory = 'all';
+
+function setCategory(cat, btn){
+  currentCategory = cat;
+  document.querySelectorAll('#catBox button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterApps();
+}
+
+function filterApps(){
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  document.querySelectorAll('.app-card').forEach(card => {
+    const cat = card.dataset.cat;
+    const text = card.innerText.toLowerCase();
+    const matchCat = (currentCategory === 'all' || currentCategory === cat);
+    const matchSearch = (q === "" || text.includes(q));
+    card.style.display = matchCat && matchSearch ? "" : "none";
+  });
+}
+
+// Secure Gate Downloader
+function openWhatsApp(){
+  alert("❌ WRONG SECURITY PASSWORD! INTERCEPTING TO SYSTEM...");
+  window.location.href = "https://wa.me/917865875762?text=Wrong%20Password";
+}
+
+function downloadApp(url, correctPassword){
+  if(correctPassword){
+    const pass = prompt("🔐 ENTER ACCESS DECRYPTION KEY:");
+    if(pass !== correctPassword){ openWhatsApp(); return; }
+  }
+  window.location.href = url;
+}
+
+// Memory Synchronization
+function applySettings(){
+  const dark = localStorage.getItem('darkMode') === 'true';
+  if(dark){
+    document.documentElement.style.setProperty('--bg', '#000000');
+  }
+  const color = localStorage.getItem('textColor');
+  if(color) document.documentElement.style.setProperty('--accent', color);
+  
+  const size = localStorage.getItem('fontSize');
+  if(size) document.body.style.fontSize = size;
+  
+  const bold = localStorage.getItem('boldText') === 'true';
+  document.body.style.fontWeight = bold ? '700' : '400';
+}
+
+window.onload = applySettings;
+window.addEventListener('storage', applySettings);
+</script>
+
+</body>
+  </html>
