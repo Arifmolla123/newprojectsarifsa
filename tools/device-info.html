@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Info Scanner Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --accent: #00ff41; --bg: #000; --card: #0a0a0a; --border: #222; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: #fff; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; text-align: center; }
+        
+        /* Header */
+        .header { display: flex; align-items: center; text-align: left; margin-bottom: 20px; }
+        .header a { color: var(--accent); font-size: 1.5rem; margin-right: 20px; text-decoration: none; }
+        .header h2 { font-size: 1.3rem; color: #fff; }
+
+        /* Description Box */
+        .info-note { background: #111; border: 1px dashed var(--accent); padding: 15px; border-radius: 12px; text-align: left; margin-bottom: 20px; font-size: 0.8rem; color: #aaa; line-height: 1.4; }
+
+        /* Scanner Button Area */
+        .scanner-box { background: var(--card); border: 1px solid var(--border); padding: 25px 20px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .scan-btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 14px; border-radius: 8px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .scan-btn:hover { background: #00cc33; box-shadow: 0 0 15px rgba(0, 255, 65, 0.4); }
+
+        /* Loader Animation */
+        .loader-box { display: none; text-align: center; padding: 20px; color: var(--accent); font-family: monospace; font-size: 0.85rem; }
+        .spinner { border: 3px solid #111; border-top: 3px solid var(--accent); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Results Terminal Dashboard */
+        .result-section { display: none; background: #050505; border: 1px solid var(--border); border-radius: 12px; padding: 15px; text-align: left; margin-bottom: 20px; animation: fadeIn 0.5s ease; }
+        .info-row { display: flex; justify-content: space-between; border-bottom: 1px solid #111; padding: 12px 0; font-size: 0.85rem; font-family: monospace; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #888; display: flex; align-items: center; gap: 8px; }
+        .info-label i { color: var(--accent); width: 16px; text-align: center; }
+        .info-value { color: #fff; font-weight: bold; text-align: right; max-width: 60%; word-break: break-word; }
+
+        /* Developer Footer Branding */
+        .dev-footer { margin-top: auto; padding: 15px; font-size: 0.75rem; color: #555; letter-spacing: 1px; font-weight: bold; text-transform: uppercase; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="#" onclick="window.history.back(); return false;"><i class="fas fa-arrow-left"></i></a> 
+        <h2>Device Info Scanner</h2>
+    </div>
+
+    <div class="info-note">
+        <i class="fas fa-mobile-alt" style="color: var(--accent);"></i> 
+        <strong>সিস্টেম অডিটর:</strong> এক ক্লিকে আপনার বর্তমান ব্যবহৃত ডিভাইসের হার্ডওয়্যার, ওএস, লাইভ আইপি এবং নেটওয়ার্ক অপারেটরের ইন্টারনাল কনফিগারেশন প্যারামিটারগুলো স্ক্যান করুন।
+    </div>
+
+    <div class="scanner-box">
+        <button class="scan-btn" onclick="startDeviceScan()">
+            <i class="fas fa-print"></i> SCAN DEVICE SPECIFICATIONS
+        </button>
+    </div>
+
+    <div class="loader-box" id="loader">
+        <div class="spinner"></div>
+        <div id="loaderText">Initializing hardware query nodes...</div>
+    </div>
+
+    <div class="result-section" id="resultBox">
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-network-wired"></i> IP Address</span>
+            <span class="info-value" id="ipVal" style="color: gold;">Fetching...</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-sitemap"></i> Internet Provider (ISP)</span>
+            <span class="info-value" id="ispVal">Fetching...</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-mobile"></i> Device Model</span>
+            <span class="info-value" id="modelVal">Detecting...</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="brands fa-android"></i> Operating System</span>
+            <span class="info-value" id="osVal">Loading...</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-window-maximize"></i> Browser Agent</span>
+            <span class="info-value" id="browserVal">Loading...</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-expand"></i> Screen Resolution</span>
+            <span class="info-value" id="screenVal">Loading...</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-battery-three-quarters"></i> Battery Level</span>
+            <span class="info-value" id="batteryVal">Detecting...</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-wifi"></i> Network Status</span>
+            <span class="info-value" id="networkVal">Loading...</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label"><i class="fas fa-microchip"></i> CPU Logical Cores</span>
+            <span class="info-value" id="cpuVal">Loading...</span>
+        </div>
+    </div>
+
+    <div class="dev-footer">
+        <i class="fas fa-code" style="color: var(--accent);"></i> Cyber Tools Developer Arif
+    </div>
+
+    <script>
+        async function startDeviceScan() {
+            document.getElementById('resultBox').style.display = 'none';
+            let loader = document.getElementById('loader');
+            let loaderText = document.getElementById('loaderText');
+            loader.style.display = 'block';
+
+            // টার্মিনাল স্ক্যানিং অ্যানিমেশন ইফেক্ট
+            setTimeout(() => { loaderText.innerText = "Pinging network adapter gateways..."; }, 800);
+            setTimeout(() => { loaderText.innerText = "Reading kernel hardware descriptors..."; }, 1600);
+            setTimeout(() => { loaderText.innerText = "Extracting live geolocation & ISP records..."; }, 2400);
+
+            // ব্যাকগ্রাউন্ডে আইপি এবং আইএসপি ডাটা ফেচ করা
+            let ipData = { ip: "Not Found", org: "Unknown ISP" };
+            try {
+                let response = await fetch('https://ipapi.co/json/');
+                if (response.ok) {
+                    ipData = await response.json();
+                }
+            } catch (error) {
+                console.log("IP API network request failed.");
+            }
+
+            setTimeout(() => {
+                loader.style.display = 'none';
+                
+                // ১. আইপি এবং আইএসপি বসানো
+                document.getElementById('ipVal').innerText = ipData.ip;
+                document.getElementById('ispVal').innerText = ipData.org;
+                
+                // ২. অপারেটিং সিস্টেম ও ব্রাউজার ডিটেকশন
+                let ua = navigator.userAgent;
+                let os = "Unknown OS";
+                if (ua.indexOf("Win") != -1) os = "Windows OS";
+                if (ua.indexOf("Mac") != -1) os = "MacOS";
+                if (ua.indexOf("X11") != -1) os = "Linux OS";
+                if (ua.indexOf("Linux") != -1 && ua.indexOf("Android") != -1) os = "Android System";
+                if (ua.indexOf("iPhone") != -1 || ua.indexOf("iPad") != -1) os = "iOS (Apple)";
+                
+                let browser = "Unknown Browser";
+                if(ua.indexOf("Chrome") != -1) browser = "Google Chrome";
+                else if(ua.indexOf("Firefox") != -1) browser = "Mozilla Firefox";
+                else if(ua.indexOf("Safari") != -1) browser = "Apple Safari";
+                else if(ua.indexOf("Edge") != -1) browser = "Microsoft Edge";
+
+                document.getElementById('osVal').innerText = os;
+                document.getElementById('browserVal').innerText = browser;
+
+                // ৩. ডিভাইস মডেল ডিটেকশন অ্যালগরিদম
+                let model = "Generic Device";
+                if (/iPhone/i.test(ua)) model = "Apple iPhone";
+                else if (/iPad/i.test(ua)) model = "Apple iPad";
+                else if (/Android/i.test(ua)) {
+                    let match = ua.match(/Android\s([0-9\.]+);\s([^;\)]+)/);
+                    if (match && match[2]) {
+                        model = match[2]; // এটি ফোনের আসল মডেল (যেমন: Redmi Note 10, SM-G998B) বের করে নেবে
+                    } else {
+                        model = "Android Device";
+                    }
+                } else if (/Windows/i.test(ua)) {
+                    model = "Windows PC / Laptop";
+                } else if (/Macintosh/i.test(ua)) {
+                    model = "Apple Mac Machine";
+                }
+                document.getElementById('modelVal').innerText = model;
+
+                // ৪. স্ক্রিন ও নেটওয়ার্ক
+                document.getElementById('screenVal').innerText = `${window.screen.width} x ${window.screen.height} px`;
+                document.getElementById('networkVal').innerText = navigator.onLine ? "ONLINE (Active)" : "OFFLINE";
+                document.getElementById('networkVal').style.color = navigator.onLine ? "#00ff41" : "#ff3e3e";
+
+                // ৫. সিপিইউ কোর
+                document.getElementById('cpuVal').innerText = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} Cores` : "Unavailable";
+
+                // ৬. লাইভ ব্যাটারি এপিআই
+                if (navigator.getBattery) {
+                    navigator.getBattery().then(function(battery) {
+                        let level = Math.floor(battery.level * 100) + "%";
+                        let charging = battery.charging ? " (Charging)" : " (Discharging)";
+                        document.getElementById('batteryVal').innerText = level + charging;
+                    });
+                } else {
+                    document.getElementById('batteryVal').innerText = "Blocked";
+                }
+
+                // ড্যাশবোর্ড স্ক্রিনে শো করা
+                document.getElementById('resultBox').style.display = 'block';
+            }, 3200);
+        }
+    </script>
+</body>
+</html>

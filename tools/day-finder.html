@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day Finder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --accent: #00ff41; --bg: #000; --card: #0a0a0a; --border: #222; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: #fff; padding: 20px; display: flex; flex-direction: column; min-height: 100vh; text-align: center; }
+        
+        /* Header */
+        .header { display: flex; align-items: center; text-align: left; margin-bottom: 20px; }
+        .header a { color: var(--accent); font-size: 1.5rem; margin-right: 20px; text-decoration: none; }
+        .header h2 { font-size: 1.3rem; color: #fff; }
+
+        /* Description Box */
+        .info-note { background: #111; border: 1px dashed var(--accent); padding: 15px; border-radius: 12px; text-align: left; margin-bottom: 20px; font-size: 0.8rem; color: #aaa; line-height: 1.4; }
+
+        /* Input Form Container */
+        .finder-box { background: var(--card); border: 1px solid var(--border); padding: 20px; border-radius: 15px; text-align: left; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.8rem; color: var(--accent); margin-bottom: 8px; font-weight: bold; letter-spacing: 0.5px; }
+        
+        /* Date Input Styling */
+        .form-group input { width: 100%; background: #000; border: 1px solid #333; padding: 12px; border-radius: 8px; color: #fff; font-size: 1rem; outline: none; transition: 0.3s; color-scheme: dark; }
+        .form-group input:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(0, 255, 65, 0.2); }
+
+        /* Find Button */
+        .search-btn { width: 100%; background: var(--accent); color: #000; border: none; padding: 14px; border-radius: 8px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
+        .search-btn:hover { background: #00cc33; box-shadow: 0 0 15px rgba(0, 255, 65, 0.4); }
+
+        /* Result Section */
+        .result-section { display: none; background: var(--card); border: 1px solid var(--border); border-radius: 15px; padding: 25px 20px; text-align: center; margin-bottom: 20px; animation: fadeIn 0.5s ease; }
+        .result-day { font-size: 2.2rem; color: var(--accent); font-weight: bold; margin: 10px 0; text-shadow: 0 0 10px rgba(0, 255, 65, 0.3); }
+        .result-text { font-size: 0.9rem; color: #aaa; }
+
+        /* Developer Footer Style */
+        .dev-footer { margin-top: auto; padding: 15px; font-size: 0.75rem; color: #555; letter-spacing: 1px; font-weight: bold; text-transform: uppercase; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="#" onclick="window.history.back(); return false;"><i class="fas fa-arrow-left"></i></a> 
+        <h2>Day Finder</h2>
+    </div>
+
+    <div class="info-note">
+        <i class="fas fa-calendar-day" style="color: var(--accent);"></i> 
+        <strong>দিন খোঁজার টুল:</strong> যেকোনো বছরের যেকোনো একটি তারিখ সিলেক্ট করুন এবং এক ক্লিকে বের করে ফেলুন সেই দিনটি কী বার ছিল!
+    </div>
+
+    <div class="finder-box">
+        <div class="form-group">
+            <label><i class="fas fa-calendar-alt"></i> তারিখ সিলেক্ট করুন</label>
+            <input type="date" id="targetDate" required>
+        </div>
+        <button class="search-btn" onclick="findTheDay()">
+            <i class="fas fa-search"></i> দিনটি খুঁজে বের করো
+        </button>
+    </div>
+
+    <div class="result-section" id="resultBox">
+        <div class="result-text" id="fullDateText"></div>
+        <div class="result-day" id="dayNameText"></div>
+        <div class="result-text" style="color: #666;" id="leapYearText"></div>
+    </div>
+
+    <div class="dev-footer">
+        <i class="fas fa-code" style="color: var(--accent);"></i> Cyber Tools Developer Arif
+    </div>
+
+    <script>
+        window.onload = function() {
+            let today = new Date().toISOString().split('T')[0];
+            document.getElementById('targetDate').value = today;
+        }
+
+        function findTheDay() {
+            let dateInput = document.getElementById('targetDate').value;
+            
+            if(!dateInput) {
+                alert("দয়া করে একটি সঠিক তারিখ সিলেক্ট করুন!");
+                return;
+            }
+
+            const banglaDays = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
+            const englishDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+            let selectedDate = new Date(dateInput);
+            let dayIndex = selectedDate.getDay();
+            
+            let year = selectedDate.getFullYear();
+            let isLeapYear = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+
+            document.getElementById('fullDateText').innerHTML = `আপনার সিলেক্ট করা তারিখ: <b style="color: gold;">${dateInput}</b>`;
+            document.getElementById('dayNameText').innerText = banglaDays[dayIndex] + ` (${englishDays[dayIndex]})`;
+            
+            if(isLeapYear) {
+                document.getElementById('leapYearText').innerText = `💡 এই বছরটি (${year}) একটি লিপ ইয়ার (Leap Year) ছিল।`;
+            } else {
+                document.getElementById('leapYearText').innerText = "";
+            }
+
+            document.getElementById('resultBox').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
